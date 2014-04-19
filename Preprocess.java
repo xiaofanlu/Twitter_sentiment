@@ -14,12 +14,8 @@ public class Preprocess {
 	public static void main(String[] args) {
 		try {
 			String inputpath = "/u/ywu/nlp/final/trainingandtestdata/training.1600000.processed.noemoticon.csv";
-			String pospath = "/u/ywu/nlp/final/trainingandtestdata//pos_train.txt";
-			String netpath = "/u/ywu/nlp/final/trainingandtestdata//net_train.txt";
-			String negpath = "/u/ywu/nlp/final/trainingandtestdata//neg_train.txt";
-			String wordclusterpath = "/u/ywu/nlp/final/trainingandtestdata//word_cluter.txt";
+			String wordclusterpath = "/u/ywu/nlp/final/trainingandtestdata//word_cluster.txt";
 			prewordcluster(inputpath, wordclusterpath);
-			splitFiles(inputpath, pospath, netpath, negpath);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -57,66 +53,8 @@ public class Preprocess {
 		
 		System.out.println("Finished preprocessing for word clustering");
 	}
-	
-	//split tweets with different sentiment to seperate files
-	//for sentiment treebank training
-	//tentative to change
-	private static void splitFiles(String inputpath, String pospath,
-			String netpath, String negpath) throws IOException {
-		File input = new File(inputpath);
-		File posfile = new File(pospath);
-		File netfile = new File(netpath);
-		File negfile = new File(negpath);
 
-		FileReader reader = new FileReader(input);
-		BufferedReader br = new BufferedReader(reader);
-
-		FileWriter pos = new FileWriter(posfile);
-		FileWriter net = new FileWriter(netfile);
-		FileWriter neg = new FileWriter(negfile);
-
-		int posnum = 0;
-		int netnum = 0;
-		int negnum = 0;
-
-		System.out.println("Preprocess for sentiment training");
-
-		String line = null;
-		while ((line = br.readLine()) != null) {
-			String[] tmp = line.split(",");
-			if (tmp.length < 6)
-				continue;
-			int i = line.indexOf(tmp[5].trim());
-			String tweet = line.substring(i+1, line.length() - 1);
-			tweet = filter(tweet);
-			char c = tmp[0].charAt(1);
-			switch (c) {
-			case '0':
-				neg.write(tmp[0] + " "+ tweet+"\n");
-				negnum++;
-				break;
-			case '2':
-				net.write(tmp[0] + " " + tweet+"\n");
-				netnum++;
-				break;
-			case '4':
-				pos.write(tmp[0] + " " + tweet+"\n");
-				posnum++;
-				break;
-			}
-		}
-
-		System.out
-				.println("Preprocessed " + negnum + " negative tweets, "
-						+ netnum + " neutral tweets and " + posnum
-						+ " positive tweets");
-		br.close();
-		pos.close();
-		net.close();
-		neg.close();
-	}
-
-	private static String filter(String s) {
+	public static String filter(String s) {
 		//replace all urls with URL
 		s = s.replaceAll("(?i)(?:https?|ftps?)://[\\w/%.-]+", "URL");
 		
